@@ -1,0 +1,13 @@
+{
+  "name": "ElasticExportMyBestBrandsDE",
+  "description": "This plugin adds the format MyBestBrandsDE to the Elastic Export.",
+  "namespace": "ElasticExportMyBestBrandsDE",
+  "author": "plentymarkets",
+  "type": "export",
+  "serviceProvider": "ElasticExportMyBestBrandsDE\\ElasticExportMyBestBrandsDEServiceProvider",
+  "version": 0.1,
+  "require":
+  {
+    "ElasticExportCore": 0.1
+  }
+}
