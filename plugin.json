@@ -8,6 +8,6 @@
   "version": 0.1,
   "require":
   {
-    "ElasticExportCore": 0.1
+    "ElasticExport": 0.1
   }
 }
