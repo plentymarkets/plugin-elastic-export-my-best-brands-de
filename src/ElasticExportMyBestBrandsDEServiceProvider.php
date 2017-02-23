@@ -18,7 +18,6 @@ class ElasticExportMyBestBrandsDEServiceProvider extends DataExchangeServiceProv
             'MyBestBrandsDE-Plugin',
             'ElasticExportMyBestBrandsDE\ResultField\MyBestBrandsDE',
             'ElasticExportMyBestBrandsDE\Generator\MyBestBrandsDE',
-            'ElasticExportMyBestBrandsDE\Filter\MyBestBrandsDE',
             true
         );
     }
