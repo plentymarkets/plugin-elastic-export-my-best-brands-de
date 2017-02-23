@@ -2,7 +2,7 @@
 
 namespace ElasticExportMyBestBrandsDE\Generator;
 
-use Plenty\Modules\DataExchange\Contracts\CSVGenerator;
+use Plenty\Modules\DataExchange\Contracts\CSVPluginGenerator;
 use Plenty\Modules\Helper\Services\ArrayHelper;
 use Plenty\Modules\Item\DataLayer\Models\Record;
 use Plenty\Modules\Item\DataLayer\Models\RecordList;
@@ -14,7 +14,7 @@ use Plenty\Modules\Item\Attribute\Models\AttributeValueName;
 use Plenty\Modules\Item\Property\Contracts\PropertySelectionRepositoryContract;
 use Plenty\Modules\Item\Property\Models\PropertySelection;
 
-class MyBestBrandsDE extends CSVGenerator
+class MyBestBrandsDE extends CSVPluginGenerator
 {
     /**
      * @var ElasticExportCoreHelper
@@ -68,7 +68,7 @@ class MyBestBrandsDE extends CSVGenerator
      * @param array $formatSettings
      * @param array $filter
      */
-    protected function generateContent($resultData, array $formatSettings = [], array $filter = [])
+    protected function generatePluginContent($resultData, array $formatSettings = [], array $filter = [])
     {
         if(is_array($resultData['documents']) && count($resultData['documents']) > 0)
         {
