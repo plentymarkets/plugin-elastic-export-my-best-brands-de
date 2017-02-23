@@ -2,11 +2,11 @@
 
 namespace ElasticExportMyBestBrandsDE\Filter;
 
-use Plenty\Modules\DataExchange\Contracts\FiltersForElasticSearchContract;
+use Plenty\Modules\DataExchange\Contracts\FiltersForElasticSearch;
 
 use Plenty\Plugin\Application;
 
-class MyBestBrandsDE extends FiltersForElasticSearchContract
+class MyBestBrandsDE extends FiltersForElasticSearch
 {
     /**
      * @var Application $app
