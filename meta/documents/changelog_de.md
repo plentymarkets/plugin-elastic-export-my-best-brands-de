@@ -1,5 +1,8 @@
 # Release Notes für Elastic Export MyBestBrands.de
 
+## v1.0.2 (2017-03-03)
+- Die ResultFields wurden angepasst, sodass der imageMutator nicht mehr greift falls "ALLE" als Referrer ausgewählt wurde
+
 ## v1.0.1 (2017-03-01)
 
 # Changed
