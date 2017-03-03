@@ -162,110 +162,17 @@ class MyBestBrandsDE extends ResultFields
                 $defaultCategoryMutator
             ],
         ];
+
+        if($reference != -1)
+        {
+            $fields[1][] = $imageMutator;
+        }
+
         foreach($itemDescriptionFields as $itemDescriptionField)
         {
             $fields[0][] = $itemDescriptionField;
         }
 
         return $fields;
-//
-//        $fields = [
-//            'itemBase'=> [
-//                'id',                     done
-//                'producerId',             done
-//                'lastUpdateTimestamp',    ?
-//                'storeSpecial',           done
-//            ],
-//
-//            'itemDescription' => [
-//                'params' => [
-//                    'language' => $settings->get('lang') ? $settings->get('lang') : 'de',
-//                ],
-//                'fields' => $itemDescriptionFields, done
-//            ],
-//
-//            'variationImageList' => [
-//                'params' => [
-//                    'type' => 'item_variation',
-//                    'referenceMarketplace' => $settings->get('referrerId') ? $settings->get('referrerId') : -1,
-//                ],
-//                'fields' => [
-//                    'type',               done
-//                    'path',               done
-//                    'position',           done
-//                ]
-//            ],
-//
-//            'variationBase' => [
-//                'availability',               done
-//                'attributeValueSetId',        done
-//                'model',                      done
-//                'limitOrderByStockSelect',    done
-//                'unitId',                     done
-//                'content',                    done
-//            ],
-//
-//            'variationStock' => [
-//                'params' => [
-//                    'type' => 'virtual',
-//                ],
-//                'fields' => [
-    //                    'stockNet'                todo grab from idl
-//                ]
-//            ],
-//
-//            'variationRetailPrice' => [
-//                'params' => [
-//                    'referrerId' => $settings->get('referrerId'),
-//                ],
-//                'fields' => [
-//                    'price',                  todo grab from idl
-//                ],
-//            ],
-//
-//            'variationRecommendedRetailPrice' => [
-//                'params' => [
-//                    'referrerId' => $settings->get('referrerId'),
-//                ],
-//                'fields' => [
-//                    'price',                  todo grab from idl
-//                ],
-//            ],
-//
-//            'variationStandardCategory' => [
-//                'params' => [
-//                    'plentyId' => $settings->get('plentyId'),
-//                ],
-//                'fields' => [
-//                    'categoryId',             done
-//                    'plentyId',
-//                    'manually',
-//                ],
-//            ],
-//
-//            'variationBarcodeList' => [
-//                'params' => [
-//                    'barcodeType' => $settings->get('barcode') ? $settings->get('barcode') : 'EAN',
-//                ],
-//                'fields' => [
-//                    'code',               done
-//                    'barcodeId',          done
-//                ]
-//            ],
-//
-//            'variationAttributeValueList' => [
-//                'attributeId',            done
-//                'attributeValueId',       done
-//            ],
-//
-//            'itemPropertyList' => [
-//                'itemPropertyId',         todo grab from idl
-//                'propertyId',             todo grab from idl
-//                'propertyValue',          todo grab from idl
-//                'propertyValueType',      todo grab from idl
-//            ],
-//        ];
-//
-//        return $fields;
     }
 }
