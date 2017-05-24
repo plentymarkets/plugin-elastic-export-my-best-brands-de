@@ -1,5 +1,10 @@
 # Release Notes for Elastic Export MyBestBrands.de
 
+## v1.0.5 (2017-05-24)
+
+### Changed
+- The plugin Elastic Export is now required to use the plugin format MyBestBrandsDE.
+
 ## v1.0.4 (2017-03-22)
 
 ### Fixed
