@@ -16,10 +16,8 @@
   "categories": [
     "3523"
   ],
-  "version": "1.0.5",
-  "require": {
-    "ElasticExport": ">=1.0.18"
-  },
+  "version": "1.0.6",
+  "require": ["ElasticExport"],
   "marketplaceName": {
     "de":"mybestbrands.de",
     "en":"mybestbrands.de"
