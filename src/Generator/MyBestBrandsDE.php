@@ -54,6 +54,11 @@ class MyBestBrandsDE extends CSVPluginGenerator
      */
     private $propertySelectionRepository;
 
+	/**
+	 * @var array
+	 */
+    private $rows = array();
+
     /**
      * @param ArrayHelper $arrayHelper
      * @param AttributeValueNameRepositoryContract $attributeValueNameRepository
@@ -158,28 +163,28 @@ class MyBestBrandsDE extends CSVPluginGenerator
 	 */
 	private function buildRow($variation, $settings)
 	{
-		$rows = [];
-
-		if(!array_key_exists($variation['data']['item']['id'], $rows))
+		if(!array_key_exists($variation['data']['item']['id'], $this->rows))
 		{
-			$rows[$variation['data']['item']['id']] = $this->getMain($variation, $settings);
+			$this->fillLines();
+			$this->rows = array();
+			$this->rows[$variation['data']['item']['id']] = $this->getMain($variation, $settings);
 		}
 
-		if(array_key_exists($variation['data']['item']['id'], $rows) && $variation['data']['attributes'][0]['attributeValueSetId'] > 0)
+		if(array_key_exists($variation['data']['item']['id'], $this->rows) && $variation['data']['attributes'][0]['attributeValueSetId'] > 0)
 		{
 			$variationAttributes = $this->getVariationAttributes($variation, $settings);
 
 			if(array_key_exists('Color', $variationAttributes))
 			{
-				$rows[$variation['data']['item']['id']]['Color'] = array_unique(array_merge($rows[$variation['data']['item']['id']]['Color'], $variationAttributes['Color']));
+				$this->rows[$variation['data']['item']['id']]['Color'] = array_unique(array_merge($this->rows[$variation['data']['item']['id']]['Color'], $variationAttributes['Color']));
 			}
 
 			if(array_key_exists('Size', $variationAttributes))
 			{
-				$rows[$variation['data']['item']['id']]['AvailableSizes'] = array_unique(array_merge($rows[$variation['data']['item']['id']]['AvailableSizes'], $variationAttributes['Size']));
+				$this->rows[$variation['data']['item']['id']]['AvailableSizes'] = array_unique(array_merge($this->rows[$variation['data']['item']['id']]['AvailableSizes'], $variationAttributes['Size']));
 			}
 		}
-		elseif(array_key_exists($variation['data']['item']['id'], $rows))
+		elseif(array_key_exists($variation['data']['item']['id'], $this->rows))
 		{
 			$itemPropertyList = $this->elasticExportPropertyHelper->getItemPropertyList($variation, $settings->get('referrerId'));
 
@@ -188,31 +193,16 @@ class MyBestBrandsDE extends CSVPluginGenerator
 				switch($key)
 				{
 					case 'color':
-						array_push($rows[$variation['data']['item']['id']]['Color'], $value);
-						$rows[$variation['data']['item']['id']]['Color'] = array_unique($rows[$variation['data']['item']['id']]['Color']);
+						array_push($this->rows[$variation['data']['item']['id']]['Color'], $value);
+						$this->rows[$variation['data']['item']['id']]['Color'] = array_unique($this->rows[$variation['data']['item']['id']]['Color']);
 						break;
 
 					case 'available_sizes':
-						array_push($rows[$variation['data']['item']['id']]['AvailableSizes'], $value);
-						$rows[$variation['data']['item']['id']]['AvailableSizes'] = array_unique($rows[$variation['data']['item']['id']]['AvailableSizes']);
+						array_push($this->rows[$variation['data']['item']['id']]['AvailableSizes'], $value);
+						$this->rows[$variation['data']['item']['id']]['AvailableSizes'] = array_unique($this->rows[$variation['data']['item']['id']]['AvailableSizes']);
 						break;
 				}
 			}
-		}
-
-		foreach($rows as $data)
-		{
-			if(array_key_exists('Color', $data) && is_array($data['Color']))
-			{
-				$data['Color'] = implode(';', $data['Color']);
-			}
-
-			if(array_key_exists('AvailableSizes', $data) && is_array($data['AvailableSizes']))
-			{
-				$data['AvailableSizes'] = implode(', ', $data['AvailableSizes']);
-			}
-
-			$this->addCSVContent(array_values($data));
 		}
 	}
 
@@ -234,7 +224,12 @@ class MyBestBrandsDE extends CSVPluginGenerator
 
         $price = $priceList['price'];
 
-        $rrp = $priceList['recommendedRetailPrice'] > $price ? $priceList['recommendedRetailPrice'] : '';
+        $rrp = '';
+
+        if((float)$price > 0)
+        {
+			$rrp = $priceList['recommendedRetailPrice'] > $price ? $priceList['recommendedRetailPrice'] : '';
+		}
 
         $imageUrl = $this->elasticExportHelper->getImageListInOrder($variation, $settings, 1, $this->elasticExportHelper::ITEM_IMAGES)[0];
 
@@ -254,7 +249,7 @@ class MyBestBrandsDE extends CSVPluginGenerator
             'EAN'					=> $this->elasticExportHelper->getBarcodeByType($variation, $settings->get('barcode')),
             'LastUpdate'			=> $variation['data']['item']['updatedAt'],
             'UnitPrice'				=> $this->elasticExportPriceHelper->getBasePrice($variation, (float)$price, $settings->get('lang'), '/', false, false, $priceList['currency']),
-            'RetailerAttributes'	=> $variation['data']['item']['storeSpecial'] == 2 ? 'new-arrival' : '',
+            'RetailerAttributes'	=> $variation['data']['item']['storeSpecial']['names']['name'],
             'Color'					=> [],
         ];
 
@@ -286,4 +281,22 @@ class MyBestBrandsDE extends CSVPluginGenerator
 
         return $variationAttributes;
     }
+
+    private function fillLines()
+	{
+		foreach($this->rows as $data)
+		{
+			if(array_key_exists('Color', $data) && is_array($data['Color']))
+			{
+				$data['Color'] = implode(';', $data['Color']);
+			}
+
+			if(array_key_exists('AvailableSizes', $data) && is_array($data['AvailableSizes']))
+			{
+				$data['AvailableSizes'] = implode(', ', $data['AvailableSizes']);
+			}
+
+			$this->addCSVContent(array_values($data));
+		}
+	}
 }

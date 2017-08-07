@@ -1,6 +1,12 @@
 # Release Notes für Elastic Export MyBestBrands.de
 
-## v1.0.8 (2017-07-18)  
+## v1.0.7 (2017-08-07)  
+
+### Geändert
+- Das Formatplugin basiert nun nur noch auf Elastic Search.
+- Die Performance wurde verbessert.
+
+## v1.0.6 (2017-07-18)  
 
 ### Geändert
 - Das Plugin Elastic Export ist nun Voraussetzung zur Nutzung des Plugin-Formats.
