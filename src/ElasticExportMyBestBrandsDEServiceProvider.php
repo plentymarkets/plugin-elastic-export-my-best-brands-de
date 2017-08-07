@@ -19,7 +19,8 @@ class ElasticExportMyBestBrandsDEServiceProvider extends DataExchangeServiceProv
             'ElasticExportMyBestBrandsDE\ResultField\MyBestBrandsDE',
             'ElasticExportMyBestBrandsDE\Generator\MyBestBrandsDE',
             '',
-            true
+            true,
+			true
         );
     }
 }
