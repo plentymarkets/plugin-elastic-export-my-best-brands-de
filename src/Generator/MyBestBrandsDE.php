@@ -238,7 +238,16 @@ class MyBestBrandsDE extends CSVPluginGenerator
 			$rrp = $priceList['recommendedRetailPrice'] > $price ? $priceList['recommendedRetailPrice'] : '';
 		}
 
-        $imageUrl = $this->elasticExportHelper->getImageListInOrder($variation, $settings, 1, $this->elasticExportHelper::ITEM_IMAGES)[0];
+        $imageUrl = $this->elasticExportHelper->getImageListInOrder($variation, $settings, 1, $this->elasticExportHelper::ITEM_IMAGES);
+
+		if(count($imageUrl) > 0)
+		{
+			$imageUrl = $imageUrl[0];
+		}
+		else
+		{
+			$imageUrl = '';
+		}
 
         $data = [
             'ProductID' 			=> $variation['data']['item']['id'],
