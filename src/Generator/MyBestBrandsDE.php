@@ -19,6 +19,8 @@ class MyBestBrandsDE extends CSVPluginGenerator
 {
 	use Loggable;
 
+	const DELIMITER = ";";
+
     /**
      * @var ElasticExportCoreHelper
      */
@@ -89,26 +91,9 @@ class MyBestBrandsDE extends CSVPluginGenerator
 
 		$settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
 
-		$this->setDelimiter(";");
+		$this->setDelimiter(self::DELIMITER);
 
-		$this->addCSVContent([
-			'ProductID',
-			'ProductCategory',
-			'Deeplink',
-			'ProductName',
-			'ImageUrl',
-			'ProductDescription',
-			'BrandName',
-			'Price',
-			'PreviousPrice',
-			'AvailableSizes',
-			'Tags',
-			'EAN',
-			'LastUpdate',
-			'UnitPrice',
-			'RetailerAttributes',
-			'Color',
-		]);
+		$this->setHeader();
 
 		if($elasticSearch instanceof VariationElasticSearchScrollRepositoryContract)
 		{
@@ -155,6 +140,28 @@ class MyBestBrandsDE extends CSVPluginGenerator
 				}
 			}while ($elasticSearch->hasNext());
 		}
+	}
+
+	private function setHeader()
+	{
+		$this->addCSVContent([
+			'ProductID',
+			'ProductCategory',
+			'Deeplink',
+			'ProductName',
+			'ImageUrl',
+			'ProductDescription',
+			'BrandName',
+			'Price',
+			'PreviousPrice',
+			'AvailableSizes',
+			'Tags',
+			'EAN',
+			'LastUpdate',
+			'UnitPrice',
+			'RetailerAttributes',
+			'Color',
+		]);
 	}
 
 	/**
