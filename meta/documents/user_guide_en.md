@@ -7,7 +7,7 @@
 
 mybestbrands is a recommendation platform for greatly discounted fashion and lifestyle products, as well as for electronic products from well known, brand name manufacturers. Please note that this website is currently only available in German.
 
-## 2 2 Setting up the data format MyBestBrandsDE-Plugin in plentymarkets
+## 2 Setting up the data format MyBestBrandsDE-Plugin in plentymarkets
 
 The plugin Elastic Export is required to use this format.
 
