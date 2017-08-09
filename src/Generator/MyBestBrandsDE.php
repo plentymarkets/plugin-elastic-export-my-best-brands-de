@@ -2,24 +2,44 @@
 
 namespace ElasticExportMyBestBrandsDE\Generator;
 
+use ElasticExport\Helper\ElasticExportPriceHelper;
+use ElasticExport\Helper\ElasticExportStockHelper;
+use ElasticExport\Helper\ElasticExportPropertyHelper;
 use Plenty\Modules\DataExchange\Contracts\CSVPluginGenerator;
 use Plenty\Modules\Helper\Services\ArrayHelper;
-use Plenty\Modules\Item\DataLayer\Models\Record;
-use Plenty\Modules\Item\DataLayer\Models\RecordList;
-use Plenty\Modules\DataExchange\Models\FormatSetting;
 use ElasticExport\Helper\ElasticExportCoreHelper;
 use Plenty\Modules\Helper\Models\KeyValue;
 use Plenty\Modules\Item\Attribute\Contracts\AttributeValueNameRepositoryContract;
 use Plenty\Modules\Item\Attribute\Models\AttributeValueName;
 use Plenty\Modules\Item\Property\Contracts\PropertySelectionRepositoryContract;
-use Plenty\Modules\Item\Property\Models\PropertySelection;
+use Plenty\Modules\Item\Search\Contracts\VariationElasticSearchScrollRepositoryContract;
+use Plenty\Plugin\Log\Loggable;
 
 class MyBestBrandsDE extends CSVPluginGenerator
 {
+	use Loggable;
+
+	const DELIMITER = ";";
+
     /**
      * @var ElasticExportCoreHelper
      */
     private $elasticExportHelper;
+
+	/**
+	 * @var ElasticExportStockHelper $elasticExportStockHelper
+	 */
+	private $elasticExportStockHelper;
+
+	/**
+	 * @var ElasticExportPriceHelper $elasticExportPriceHelper
+	 */
+	private $elasticExportPriceHelper;
+
+	/**
+	 * @var ElasticExportPropertyHelper $elasticExportPropertyHelper
+	 */
+	private $elasticExportPropertyHelper;
 
     /*
      * @var ArrayHelper
@@ -36,18 +56,12 @@ class MyBestBrandsDE extends CSVPluginGenerator
      */
     private $propertySelectionRepository;
 
-    /**
-     * @var array
-     */
-    private $idlVariations = array();
+	/**
+	 * @var array
+	 */
+    private $rows = array();
 
     /**
-     * @var array
-     */
-    private $itemPropertyCache = [];
-
-    /**
-     * Geizhals constructor.
      * @param ArrayHelper $arrayHelper
      * @param AttributeValueNameRepositoryContract $attributeValueNameRepository
      * @param PropertySelectionRepositoryContract $propertySelectionRepository
@@ -63,159 +77,186 @@ class MyBestBrandsDE extends CSVPluginGenerator
         $this->propertySelectionRepository = $propertySelectionRepository;
     }
 
-    /**
-     * @param array $resultData
-     * @param array $formatSettings
-     * @param array $filter
-     */
-    protected function generatePluginContent($resultData, array $formatSettings = [], array $filter = [])
-    {
-        if(is_array($resultData['documents']) && count($resultData['documents']) > 0)
-        {
-            $this->elasticExportHelper = pluginApp(ElasticExportCoreHelper::class);
-            $settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
+	/**
+	 * @param VariationElasticSearchScrollRepositoryContract $elasticSearch
+	 * @param array $formatSettings
+	 * @param array $filter
+	 */
+	protected function generatePluginContent($elasticSearch, array $formatSettings = [], array $filter = [])
+	{
+		$this->elasticExportHelper = pluginApp(ElasticExportCoreHelper::class);
+		$this->elasticExportStockHelper = pluginApp(ElasticExportStockHelper::class);
+		$this->elasticExportPriceHelper = pluginApp(ElasticExportPriceHelper::class);
+		$this->elasticExportPropertyHelper = pluginApp(ElasticExportPropertyHelper::class);
 
-            $this->setDelimiter(";");
+		$settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
 
-            $this->addCSVContent([
-                'ProductID',
-                'ProductCategory',
-                'Deeplink',
-                'ProductName',
-                'ImageUrl',
-                'ProductDescription',
-                'BrandName',
-                'Price',
-                'PreviousPrice',
-                'AvailableSizes',
-                'Tags',
-                'EAN',
-                'LastUpdate',
-                'UnitPrice',
-                'RetailerAttributes',
-                'Color',
-            ]);
+		$this->setDelimiter(self::DELIMITER);
 
-            //Create a List of all VariationIds
-            $variationIdList = array();
-            foreach($resultData['documents'] as $variation)
-            {
-                $variationIdList[] = $variation['id'];
-            }
+		$this->setHeader();
 
-            //Get the missing fields in ES from IDL
-            if(is_array($variationIdList) && count($variationIdList) > 0)
-            {
-                /**
-                 * @var \ElasticExportMyBestBrandsDE\IDL_ResultList\MyBestBrandsDE $idlResultList
-                 */
-                $idlResultList = pluginApp(\ElasticExportMyBestBrandsDE\IDL_ResultList\MyBestBrandsDE::class);
-                $idlResultList = $idlResultList->getResultList($variationIdList, $settings);
-            }
+		if($elasticSearch instanceof VariationElasticSearchScrollRepositoryContract)
+		{
+			$limitReached = false;
+			$lines = 0;
+			do
+			{
+				if($limitReached === true)
+				{
+					break;
+				}
 
-            //Creates an array with the variationId as key to surpass the sorting problem
-            if(isset($idlResultList) && $idlResultList instanceof RecordList)
-            {
-                $this->createIdlArray($idlResultList);
-            }
+				$resultList = $elasticSearch->execute();
 
-            $rows = [];
+				foreach($resultList['documents'] as $variation)
+				{
+					if($lines == $filter['limit'])
+					{
+						$limitReached = true;
+						break;
+					}
 
-            foreach($resultData['documents'] as $item)
-            {
-                if(!array_key_exists($item['data']['item']['id'], $rows))
-                {
-                    $rows[$item['data']['item']['id']] = $this->getMain($item, $settings);
-                }
+					if(is_array($resultList['documents']) && count($resultList['documents']) > 0)
+					{
+						if($this->elasticExportStockHelper->isFilteredByStock($variation, $filter) === true)
+						{
+							continue;
+						}
 
-                if(array_key_exists($item['data']['item']['id'], $rows) && $item['data']['attributes'][0]['attributeValueSetId'] > 0)
-                {
-                    $variationAttributes = $this->getVariationAttributes($item, $settings);
+						try
+						{
+							$this->buildRow($variation, $settings);
+						}
+						catch(\Throwable $throwable)
+						{
+							$this->getLogger(__METHOD__)->error('ElasticExportMyBestBrandsDE::logs.fillRowError', [
+								'Error message ' => $throwable->getMessage(),
+								'Error line'    => $throwable->getLine(),
+								'VariationId'   => $variation['id']
+							]);
+						}
+						$lines = $lines +1;
+					}
+				}
+			}while ($elasticSearch->hasNext());
+		}
+	}
 
-                    if(array_key_exists('Color', $variationAttributes))
-                    {
-                        $rows[$item['data']['item']['id']]['Color'] = array_unique(array_merge($rows[$item['data']['item']['id']]['Color'], $variationAttributes['Color']));
-                    }
+	private function setHeader()
+	{
+		$this->addCSVContent([
+			'ProductID',
+			'ProductCategory',
+			'Deeplink',
+			'ProductName',
+			'ImageUrl',
+			'ProductDescription',
+			'BrandName',
+			'Price',
+			'PreviousPrice',
+			'AvailableSizes',
+			'Tags',
+			'EAN',
+			'LastUpdate',
+			'UnitPrice',
+			'RetailerAttributes',
+			'Color',
+		]);
+	}
 
-                    if(array_key_exists('Size', $variationAttributes))
-                    {
-                        $rows[$item['data']['item']['id']]['AvailableSizes'] = array_unique(array_merge($rows[$item['data']['item']['id']]['AvailableSizes'], $variationAttributes['Size']));
-                    }
-                }
-                elseif(array_key_exists($item['data']['item']['id'], $rows))
-                {
-                    $itemPropertyList = $this->getItemPropertyList($item, $settings);
+	/**
+	 * @param $variation
+	 * @param $settings
+	 */
+	private function buildRow($variation, $settings)
+	{
+		if(!array_key_exists($variation['data']['item']['id'], $this->rows))
+		{
+			$this->fillLines();
+			$this->rows = array();
+			$this->rows[$variation['data']['item']['id']] = $this->getMain($variation, $settings);
+		}
 
-                    foreach($itemPropertyList as $key => $value)
-                    {
-                        switch($key)
-                        {
-                            case 'color':
-                                array_push($rows[$item['data']['item']['id']]['Color'], $value);
-                                $rows[$item['data']['item']['id']]['Color'] = array_unique($rows[$item['data']['item']['id']]['Color']);
-                                break;
+		if(array_key_exists($variation['data']['item']['id'], $this->rows) && $variation['data']['attributes'][0]['attributeValueSetId'] > 0)
+		{
+			$variationAttributes = $this->getVariationAttributes($variation, $settings);
 
-                            case 'available_sizes':
-                                array_push($rows[$item['data']['item']['id']]['AvailableSizes'], $value);
-                                $rows[$item['data']['item']['id']]['AvailableSizes'] = array_unique($rows[$item['data']['item']['id']]['AvailableSizes']);
-                                break;
-                        }
-                    }
-                }
-            }
+			if(array_key_exists('Color', $variationAttributes))
+			{
+				$this->rows[$variation['data']['item']['id']]['Color'] = array_unique(array_merge($this->rows[$variation['data']['item']['id']]['Color'], $variationAttributes['Color']));
+			}
 
-            foreach($rows as $data)
-            {
-                if(array_key_exists('Color', $data) && is_array($data['Color']))
-                {
-                    $data['Color'] = implode(';', $data['Color']);
-                }
+			if(array_key_exists('Size', $variationAttributes))
+			{
+				$this->rows[$variation['data']['item']['id']]['AvailableSizes'] = array_unique(array_merge($this->rows[$variation['data']['item']['id']]['AvailableSizes'], $variationAttributes['Size']));
+			}
+		}
+		elseif(array_key_exists($variation['data']['item']['id'], $this->rows))
+		{
+			$itemPropertyList = $this->elasticExportPropertyHelper->getItemPropertyList($variation, $settings->get('referrerId'));
 
-                if(array_key_exists('AvailableSizes', $data) && is_array($data['AvailableSizes']))
-                {
-                    $data['AvailableSizes'] = implode(', ', $data['AvailableSizes']);
-                }
+			foreach($itemPropertyList as $key => $value)
+			{
+				switch($key)
+				{
+					case 'color':
+						array_push($this->rows[$variation['data']['item']['id']]['Color'], $value);
+						$this->rows[$variation['data']['item']['id']]['Color'] = array_unique($this->rows[$variation['data']['item']['id']]['Color']);
+						break;
 
-                $this->addCSVContent(array_values($data));
-            }
-        }
-    }
+					case 'available_sizes':
+						array_push($this->rows[$variation['data']['item']['id']]['AvailableSizes'], $value);
+						$this->rows[$variation['data']['item']['id']]['AvailableSizes'] = array_unique($this->rows[$variation['data']['item']['id']]['AvailableSizes']);
+						break;
+				}
+			}
+		}
+	}
 
     /**
      * Get main information.
-     * @param  array $item
+     * @param  array $variation
      * @param  KeyValue $settings
      * @return array
      */
-    private function getMain($item, KeyValue $settings):array
+    private function getMain($variation, KeyValue $settings):array
     {
-        $itemPropertyList = $this->getItemPropertyList($item, $settings);
+        $itemPropertyList = $this->elasticExportPropertyHelper->getItemPropertyList($variation, $settings->get('referrerId'));
 
         $productName = array_key_exists('itemName', $itemPropertyList) && strlen((string) $itemPropertyList['itemName']) ?
-            $this->elasticExportHelper->cleanName((string) $itemPropertyList['itemName'], $settings->get('nameMaxLength')) :
-            $this->elasticExportHelper->getName($item, $settings);
-        $price = (float)$this->idlVariations[$item['id']]['variationRetailPrice.price'];
-        $rrp = (float)$this->elasticExportHelper
-            ->getRecommendedRetailPrice($this->idlVariations[$item['id']]['variationRecommendedRetailPrice.price'], $settings);
+            $this->elasticExportHelper->cleanName((string) $itemPropertyList['itemName'], (int) $settings->get('nameMaxLength')) :
+            $this->elasticExportHelper->getName($variation, $settings);
 
+        $priceList = $this->elasticExportPriceHelper->getPriceList($variation, $settings, 2, ',');
+
+        $price = $priceList['price'];
+
+        $rrp = '';
+
+        if((float)$price > 0)
+        {
+			$rrp = $priceList['recommendedRetailPrice'] > $price ? $priceList['recommendedRetailPrice'] : '';
+		}
+
+        $imageUrl = $this->elasticExportHelper->getImageListInOrder($variation, $settings, 1, $this->elasticExportHelper::ITEM_IMAGES)[0];
 
         $data = [
-            'ProductID' 			=> $item['data']['item']['id'],
+            'ProductID' 			=> $variation['data']['item']['id'],
             'ProductCategory' 		=> str_replace(array('&', '/'), array('und', ' '),
-                $this->elasticExportHelper->getCategory((int)$item['data']['defaultCategories'][0]['id'], $settings->get('lang'), $settings->get('plentyId'))),
-            'Deeplink' 				=> $this->elasticExportHelper->getUrl($item, $settings, true, false),
+                $this->elasticExportHelper->getCategory((int)$variation['data']['defaultCategories'][0]['id'], $settings->get('lang'), $settings->get('plentyId'))),
+            'Deeplink' 				=> $this->elasticExportHelper->getMutatedUrl($variation, $settings, true, false),
             'ProductName'			=> $productName,
-            'ImageUrl' 				=> $this->elasticExportHelper->getMainImage($item, $settings),
-            'ProductDescription' 	=> $this->elasticExportHelper->getDescription($item, $settings),
-            'BrandName'				=> $this->elasticExportHelper->getExternalManufacturerName((int)$item['data']['item']['manufacturer']['id']),
-            'Price'					=> number_format((float)$price, 2, ',', ''),
-            'PreviousPrice'			=> number_format((float)$rrp > $price ? $rrp : 0, 2, ',', ''),
-            'Tags'					=> $item['data']['texts'][0]['keywords'],
-            'EAN'					=> $this->elasticExportHelper->getBarcodeByType($item, $settings->get('barcode')),
-            'LastUpdate'			=> $item['data']['item']['updatedAt'],
-            'UnitPrice'				=> $this->elasticExportHelper->getBasePrice($item, $this->idlVariations),
-            'RetailerAttributes'	=> $item['data']['item']['storeSpecial'] == 2 ? 'new-arrival' : '',
-            'AvailableSizes'		=> [],
+            'ImageUrl' 				=> $imageUrl,
+            'ProductDescription' 	=> $this->elasticExportHelper->getMutatedDescription($variation, $settings),
+            'BrandName'				=> $this->elasticExportHelper->getExternalManufacturerName((int)$variation['data']['item']['manufacturer']['id']),
+            'Price'					=> $price,
+            'PreviousPrice'			=> $rrp,
+			'AvailableSizes'		=> [],
+            'Tags'					=> $variation['data']['texts'][0]['keywords'],
+            'EAN'					=> $this->elasticExportHelper->getBarcodeByType($variation, $settings->get('barcode')),
+            'LastUpdate'			=> $variation['data']['item']['updatedAt'],
+            'UnitPrice'				=> $this->elasticExportPriceHelper->getBasePrice($variation, (float)$price, $settings->get('lang'), '/', false, false, $priceList['currency']),
+            'RetailerAttributes'	=> $variation['data']['item']['storeSpecial']['names']['name'],
             'Color'					=> [],
         ];
 
@@ -248,69 +289,21 @@ class MyBestBrandsDE extends CSVPluginGenerator
         return $variationAttributes;
     }
 
-    /**
-     * @param $item
-     * @param KeyValue $settings
-     * @return array
-     */
-    protected function getItemPropertyList($item, KeyValue $settings):array
-    {
-        if(!array_key_exists($item['data']['item']['id'], $this->itemPropertyCache))
-        {
-            $characterMarketComponentList = $this->elasticExportHelper->getItemCharactersByComponent($this->idlVariations[$item['id']], $settings->get('referrerId'));
+    private function fillLines()
+	{
+		foreach($this->rows as $data)
+		{
+			if(array_key_exists('Color', $data) && is_array($data['Color']))
+			{
+				$data['Color'] = implode(';', $data['Color']);
+			}
 
-            $list = [];
+			if(array_key_exists('AvailableSizes', $data) && is_array($data['AvailableSizes']))
+			{
+				$data['AvailableSizes'] = implode(', ', $data['AvailableSizes']);
+			}
 
-            if(count($characterMarketComponentList))
-            {
-                foreach($characterMarketComponentList as $data)
-                {
-                    if((string) $data['characterValueType'] != 'file' && (string) $data['characterValueType'] != 'empty' && (string) $data['externalComponent'] != "0")
-                    {
-                        if((string) $data['characterValueType'] == 'selection')
-                        {
-                            $propertySelection = $this->propertySelectionRepository->findOne((int) $data['characterValue'], 'de');
-                            if($propertySelection instanceof PropertySelection)
-                            {
-                                $list[(string) $data['externalComponent']] = (string) $propertySelection->name;
-                            }
-                        }
-                        else
-                        {
-                            $list[(string) $data['externalComponent']] = (string) $data['characterValue'];
-                        }
-
-                    }
-                }
-            }
-
-            $this->itemPropertyCache[$item['data']['item']['id']] = $list;
-        }
-
-        return $this->itemPropertyCache[$item['data']['item']['id']];
-    }
-
-    /**
-     * @param RecordList $idlResultList
-     */
-    private function createIdlArray($idlResultList)
-    {
-        if($idlResultList instanceof RecordList)
-        {
-            foreach($idlResultList as $idlVariation)
-            {
-                if($idlVariation instanceof Record)
-                {
-                    $this->idlVariations[$idlVariation->variationBase->id] = [
-                        'itemBase.id' => $idlVariation->itemBase->id,
-                        'variationBase.id' => $idlVariation->variationBase->id,
-                        'itemPropertyList' => $idlVariation->itemPropertyList,
-                        'variationStock.stockNet' => $idlVariation->variationStock->stockNet,
-                        'variationRetailPrice.price' => $idlVariation->variationRetailPrice->price,
-                        'variationRecommendedRetailPrice.price' => $idlVariation->variationRecommendedRetailPrice->price,
-                    ];
-                }
-            }
-        }
-    }
+			$this->addCSVContent(array_values($data));
+		}
+	}
 }
