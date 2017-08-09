@@ -33,7 +33,7 @@ The following table lists details for settings, format settings and recommended 
             Format
         </td>
         <td>
-            Choose <b>SchuheDE-Plugin</b>.
+            Choose <b>MyBestBrandsDE-Plugin</b>.
         </td>        
     </tr>
     <tr>
@@ -49,7 +49,7 @@ The following table lists details for settings, format settings and recommended 
             File name
         </td>
         <td>
-            The file name must have the ending <b>.csv</b> or <b>.txt</b> for Shopzilla.de to be able to import the file successfully.
+            The file name must have the ending <b>.csv</b> or <b>.txt</b> for mybestbrands.de to be able to import the file successfully.
         </td>        
     </tr>
     <tr>
