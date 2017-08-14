@@ -5,7 +5,7 @@
 
 ## 1 Registering with MyBestBrands.de
 
-mybestbrands is a recommendation platform for greatly discounted fashion and lifestyle products, as well as for electronic products from well known, brand name manufacturers. Please note that this website is currently only available in German.
+mybestbrands.de is a recommendation platform for greatly discounted fashion and lifestyle products, as well as for electronic products from well known, brand name manufacturers. Please note that this website is currently only available in German.
 
 ## 2 Setting up the data format MyBestBrandsDE-Plugin in plentymarkets
 
@@ -70,7 +70,7 @@ The following table lists details for settings, format settings and recommended 
             Markets
         </td>
         <td>
-            Choose one or multiple order referrer. The chosen order referrer has to be active at the variation for the item to be exported.
+            Choose one or multiple order referrers. The chosen order referrer has to be active at the variation for the item to be exported.
         </td>        
     </tr>
     <tr>
@@ -176,7 +176,7 @@ The following table lists details for settings, format settings and recommended 
 			BrandName
 		</td>
 		<td>
-			<b>Content:</b> The <b>name of the manufacturer</b> of the item. The <b>external name</b> within <b>Settings » Items » Manufacturer</b> will be preferred if existing.
+			<b>Content:</b> The <b>name of the manufacturer</b> of the item. The <b>external name</b> in the menu <b>Settings » Items » Manufacturer</b> will be preferred if existing.
 		</td>        
 	</tr>
 	<tr>
@@ -192,7 +192,7 @@ The following table lists details for settings, format settings and recommended 
 			PreviousPrice
 		</td>
 		<td>
-			<b>Content:</b> If the <b>RRP</b> is activated in the format setting and is higher than the <b>sales price</b>, the <b>sales price</b> will be exported.
+			<b>Content:</b> If the <b>RRP</b> is activated in the format setting and is higher than the <b>sales price</b>, the <b>RRP</b> will be exported.
 		</td>        
 	</tr>
     <tr>
@@ -248,7 +248,7 @@ The following table lists details for settings, format settings and recommended 
             Color
         </td>
         <td>
-            <b>Content:</b> The value of an attribute, with an attribute link for <b>Amazon</b> to  <b>Color</b>. As an alternative the value of a property of the type <b>Text</b> or <b>Selection</b>, that is linked to <b>mybestbrands.de » Farbe</b> can also be used.
+            <b>Content:</b> The value of an attribute with an attribute link for <b>Amazon</b> to <b>Color</b>. The value of a property of the type <b>Text</b> or <b>Selection</b> that is linked to <b>mybestbrands.de » Farbe</b> can also be used as an alternativ.
         </td>        
     </tr>
 </table>
