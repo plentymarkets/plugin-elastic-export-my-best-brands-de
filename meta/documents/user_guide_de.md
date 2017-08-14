@@ -1,5 +1,5 @@
 
-# User Guide für das Elastic Export MyBestBrands.de Plugin
+# User Guide für das ElasticExportMyBestBrandsDE Plugin
 
 <div class="container-toc"></div>
 
@@ -129,7 +129,7 @@ In der folgenden Tabelle finden Sie Hinweise zu den Einstellungen, Formateinstel
             ProductID
         </td>
         <td>
-            <b>Inhalt:</b> Die <b>Item-ID</b> der Variante.
+            <b>Inhalt:</b> Die <b>Artikel-ID</b> der Variante.
         </td>        
     </tr>
     <tr>
@@ -161,7 +161,7 @@ In der folgenden Tabelle finden Sie Hinweise zu den Einstellungen, Formateinstel
 			ImageUrl
 		</td>
 		<td>
-			<b>Inhalt:</b> URL des Bildes. Artikelbilder werden vor Varianten priorisiert.
+			<b>Inhalt:</b> URL des Bildes. Artikelbilder werden vor Variantenbilder priorisiert.
 		</td>        
 	</tr>
 	<tr>
@@ -177,7 +177,7 @@ In der folgenden Tabelle finden Sie Hinweise zu den Einstellungen, Formateinstel
 			BrandName
 		</td>
 		<td>
-			<b>Inhalt:</b> Der <b>Name des Herstellers</b> des Artikels. Der <b>Externe Name</b> unter <b>Einstellungen » Artikel » Hersteller</b> wird bevorzugt, wenn vorhanden.
+			<b>Inhalt:</b> Der <b>Name des Herstellers</b> des Artikels. Der <b>Externe Name</b> unter <b>Einstellungen » Artikel » Hersteller</b> wird priorisiert, wenn vorhanden.
 		</td>        
 	</tr>
 	<tr>
