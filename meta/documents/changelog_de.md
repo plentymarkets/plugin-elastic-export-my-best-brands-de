@@ -1,5 +1,10 @@
 # Release Notes für Elastic Export MyBestBrands.de
 
+## v1.0.8 (2018-02-16)  
+
+### Geändert
+- Plugin-Kurzbeschreibung wurde angepasst.
+
 ## v1.0.7 (2017-08-07)  
 
 ### Geändert

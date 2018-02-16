@@ -10,13 +10,13 @@
   "pluginIcon": "icon_plugin_md.png",
   "price": 0.00,
   "shortDescription": {
-    "de": "Das Plugin ElasticExportMyBestBrandsDE fügt das Datenformat MyBestBrandsDE zum Elastischen Export hinzu.",
-    "en": "This plugin adds the format MyBestBrandsDE to the Elastic Export."
+    "de": "Die Integration des Datenformats MyBestBrandsDe-Plugin ermöglicht die Artikeldatenübertragung zum Preisportal mybestbrands.de über den elastischen Export.",
+    "en": "The integration of the data format MyBestBrandsDe-Plugin enables the transfer of item data to the price search engine mybestbrands.de via the elastic export."
   },
   "categories": [
     "3523"
   ],
-  "version": "1.0.7",
+  "version": "1.0.8",
   "require": ["ElasticExport"],
   "marketplaceName": {
     "de":"mybestbrands.de",
