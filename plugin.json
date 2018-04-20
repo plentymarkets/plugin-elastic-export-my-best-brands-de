@@ -16,5 +16,8 @@
   "categories": ["3523"],
   "version": "1.0.9",
   "require": ["ElasticExport"],
-  "marketplaceName": "MY BEST BRANDS"
+  "marketplaceName": {
+    "de": "MY BEST BRANDS",
+    "en": "MY BEST BRANDS"
+  }
 }
