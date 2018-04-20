@@ -3,7 +3,7 @@
 ## v1.0.9 (2018-04-19)
 
 ### Geändert
-- Die Filtrierung der Varianten wird nun durch die Klasse FiltrationService vorgenommen.
+- Die Filtrierung der Varianten wird durch die Klasse FiltrationService vorgenommen.
 - Vorschaubilder aktualisiert.
 
 ## v1.0.8 (2018-02-16)  
