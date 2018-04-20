@@ -1,5 +1,11 @@
 # Release Notes for Elastic Export MyBestBrands.de
 
+## v1.0.9 (2018-04-19)
+
+### Changed
+- The class FiltrationService is responsible for the filtration of all variations.
+- Preview images updated.
+
 ## v1.0.8 (2018-02-16)
 
 ### Changed

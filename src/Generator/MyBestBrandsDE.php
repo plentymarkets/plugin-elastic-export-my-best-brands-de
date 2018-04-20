@@ -5,6 +5,7 @@ namespace ElasticExportMyBestBrandsDE\Generator;
 use ElasticExport\Helper\ElasticExportPriceHelper;
 use ElasticExport\Helper\ElasticExportStockHelper;
 use ElasticExport\Helper\ElasticExportPropertyHelper;
+use ElasticExport\Services\FiltrationService;
 use Plenty\Modules\DataExchange\Contracts\CSVPluginGenerator;
 use Plenty\Modules\Helper\Services\ArrayHelper;
 use ElasticExport\Helper\ElasticExportCoreHelper;
@@ -62,6 +63,11 @@ class MyBestBrandsDE extends CSVPluginGenerator
     private $rows = array();
 
     /**
+     * @var FiltrationService
+     */
+    private $filtrationService;
+
+    /**
      * @param ArrayHelper $arrayHelper
      * @param AttributeValueNameRepositoryContract $attributeValueNameRepository
      * @param PropertySelectionRepositoryContract $propertySelectionRepository
@@ -90,6 +96,7 @@ class MyBestBrandsDE extends CSVPluginGenerator
 		$this->elasticExportPropertyHelper = pluginApp(ElasticExportPropertyHelper::class);
 
 		$settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
+		$this->filtrationService = pluginApp(FiltrationService::class, [$settings, $filter]);
 
 		$this->setDelimiter(self::DELIMITER);
 
@@ -118,7 +125,7 @@ class MyBestBrandsDE extends CSVPluginGenerator
 
 					if(is_array($resultList['documents']) && count($resultList['documents']) > 0)
 					{
-						if($this->elasticExportStockHelper->isFilteredByStock($variation, $filter) === true)
+						if($this->filtrationService->filter($variation))
 						{
 							continue;
 						}
