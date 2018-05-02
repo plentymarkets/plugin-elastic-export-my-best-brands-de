@@ -43,7 +43,9 @@ class MyBestBrandsDE extends ResultFields
         $settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
         $reference = $settings->get('referrerId') ? $settings->get('referrerId') : -1;
 
-		$this->setOrderByList(['item.id', ElasticSearch::SORTING_ORDER_ASC]);
+		$this->setOrderByList([
+			'path' => 'item.id',
+			'order' => ElasticSearch::SORTING_ORDER_ASC]);
 
         $itemDescriptionFields = ['texts.urlPath'];
         $itemDescriptionFields[] = 'texts.keywords';
@@ -93,7 +95,7 @@ class MyBestBrandsDE extends ResultFields
         /**
          * @var LanguageMutator $languageMutator
          */
-        $languageMutator = pluginApp(LanguageMutator::class, [[$settings->get('lang')]]);
+		$languageMutator = pluginApp(LanguageMutator::class, ['languages' => [$settings->get('lang')]]);
         /**
          * @var SkuMutator $skuMutator
          */
