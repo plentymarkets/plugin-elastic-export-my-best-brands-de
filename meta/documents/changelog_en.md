@@ -1,5 +1,10 @@
 # Release Notes for Elastic Export MyBestBrands.de
 
+## v1.0.12 (2018-07-11)
+
+### Changed
+- An incorrect link in the user guide was corrected.
+
 ## v1.0.11 (2018-07-02)
 
 ### Changed
