@@ -11,15 +11,15 @@ mybestbrands.de is a recommendation platform for greatly discounted fashion and 
 
 By installing this plugin you will receive the export format **MyBestBrandsDE-Plugin**. Use this format to exchange data between plentymarkets and MyBestBrands.de. It is required to install the Plugin **Elastic Export** from the plentyMarketplace first before you can use the format **MyBestBrandsDE-Plugin** in plentymarkets.
 
-Once both plugins are installed, you can create the export format **MyBestBrandsDE-Plugin**. Refer to the [Elastic Export](https://knowledge.plentymarkets.com/en/basics/data-exchange/elastic-export) page of the manual for further details about the individual format settings.
+Once both plugins are installed, you can create the export format **MyBestBrandsDE-Plugin**. Refer to the [Elastic Export](https://knowledge.plentymarkets.com/en/data/exporting-data/elastic-export) page of the manual for further details about the individual format settings.
 
 Creating a new export format:
 
 1. Go to **Data » Elastic export**.
 2. Click on **New export**.
 3. Carry out the settings as desired. Pay attention to the information given in table 1.
-4. **Save** the settings.
-→ The export format will be given an ID and it will appear in the overview within the **Exports** tab.
+4. **Save** the settings.<br/>
+→ The export format is given an ID and it appears in the overview within the **Exports** tab.
 
 The following table lists details for settings, format settings and recommended item filters for the format **MyBestBrandsDE-Plugin**.
 
@@ -40,8 +40,8 @@ The following table lists details for settings, format settings and recommended 
 | **Product URL**                                       | Choose which URL should be transferred to BeezUp, the item's URL or the variation's URL. Variation SKUs can only be transferred in combination with the Ceres store. |
 | **Client**                                            | Select a client. This setting is used for the URL structure. |
 | **URL parameter**                                     | Enter a suffix for the product URL if this is required for the export. If you have activated the **transfer** option for the product URL further up, then this character string is added to the product URL. |
-| **Order referrer**                                    | Select the order referrer that should be assigned during the order import from the drop-down list. |
-| **Marketplace account**                               | Select the marketplace account from the drop-down list. The selected referrer is added to the product URL so that sales can be analysed later. |
+| **Order referrer**                                    | Select the order referrer that should be assigned during the order import from the drop-down list. The selected referrer is added to the product URL so that sales can be analysed later. |
+| **Marketplace account**                               | Select the marketplace account from the drop-down list. |
 | **Language**                                          | Select the language from the drop-down list. |
 | **Item name**                                         | Select **Name 1**, **Name 2**, or **Name 3**. These names are saved in the **Texts** tab of the item.<br/> Enter a number into the **Maximum number of characters (def. text)** field if desired. This specifies how many characters are exported for the item name. |
 | **Preview text**                                      | This option does not affect this format. |
@@ -73,7 +73,7 @@ _Tab. 1: Settings for the data format **MyBestBrandsDE-Plugin**_
 | ProductName            | According to the format setting **Item name**. |
 | ImageURL               | The image URL. Item images are prioritised over variation images. |
 | ProductDescription     | According to the format setting **Description**. |
-| BrandName              | The name of the manufacturer of the item. The **external name** in the menu **System » Items » Manufacturer** is preferred if existing. |
+| BrandName              | The name of the manufacturer of the item. The **external name** in the menu **Setup » Items » Manufacturer** is preferred if existing. |
 | Price                  | The sales price of the variation. |
 | PreviousPrice          | If the RRP is activated in the format setting and is higher than the sales price, the RRP is exported. |
 | AvailableSizes         | The sizes in which the item is available. |

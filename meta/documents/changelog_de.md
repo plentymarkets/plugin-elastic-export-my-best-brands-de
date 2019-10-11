@@ -1,5 +1,10 @@
 # Release Notes für Elastic Export MyBestBrands.de
 
+## v1.0.14 (2019-10-11)
+
+### Geändert
+- Der User Guide wurde aktualisiert (Form der Anrede geändert, fehlerhafte Links korrigiert).
+
 ## v1.0.13 (2019-01-23)
 
 ### Geändert
