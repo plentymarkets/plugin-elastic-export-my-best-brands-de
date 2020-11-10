@@ -1,5 +1,9 @@
 # Release Notes für Elastic Export MyBestBrands.de
 
+## v1.0.16 (2020-11-11)
+### Geändert
+- Plugin-Informationen aktualisiert.
+
 ## v1.0.15 (2020-06-24)
 ### Geändert
 - Die Plugin-Beschreibung wurde in das plentymarkets Handbuch umgezogen.

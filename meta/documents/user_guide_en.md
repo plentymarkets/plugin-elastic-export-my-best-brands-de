@@ -7,4 +7,4 @@
 
 ## License
 
-This project is licensed under the GNU AFFERO GENERAL PUBLIC LICENSE. Find further information in the [LICENSE.md](https://github.com/plentymarkets/plugin-elastic-export-rakuten-de/blob/master/LICENSE.md).
+This project is licensed under the GNU AFFERO GENERAL PUBLIC LICENSE. Find further information in the [LICENSE.md](https://github.com/plentymarkets/plugin-elastic-export-my-best-brands-de/blob/master/LICENSE.md).
