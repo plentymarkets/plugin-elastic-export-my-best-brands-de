@@ -123,7 +123,7 @@ class MyBestBrandsDE extends CSVPluginGenerator
 						break;
 					}
 
-					if(is_array($resultList['documents']) && count($resultList['documents']) > 0)
+					if(is_array($resultList['documents']) && count($resultList['documents'] ?? []) > 0)
 					{
 						if($this->filtrationService->filter($variation))
 						{
@@ -247,7 +247,7 @@ class MyBestBrandsDE extends CSVPluginGenerator
 
         $imageUrl = $this->elasticExportHelper->getImageListInOrder($variation, $settings, 1, $this->elasticExportHelper::ITEM_IMAGES);
 
-		if(count($imageUrl) > 0)
+		if(count($imageUrl ?? []) > 0)
 		{
 			$imageUrl = $imageUrl[0];
 		}
