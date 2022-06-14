@@ -14,12 +14,15 @@
     "en": "The integration of the data format MyBestBrandsDe-Plugin enables the transfer of item data to the price search engine MY BEST BRANDS via the elastic export."
   },
   "categories": ["3880"],
-  "version": "1.0.17",
+  "version": "1.0.18",
   "require": {
     "ElasticExport": ">= 1.6.5"
   },
   "marketplaceName": {
     "de": "MY BEST BRANDS",
     "en": "MY BEST BRANDS"
-  }
+  },
+  "platform": {
+    "php": ">=7.3 <8.1"
+}
 }
